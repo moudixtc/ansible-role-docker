@@ -9,8 +9,8 @@
   include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
   when: ansible_distribution == 'Linuxmint'
 
-- include: setup-apt.yml
-  when: ansible_pkg_mgr == 'apt'
+# perform OS specific tasks
+- include: "setup-{{ ansible_distribution }}.yml"
 
 - block:
     - name: install docker
