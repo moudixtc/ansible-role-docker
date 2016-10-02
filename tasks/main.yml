@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-docker
+
+- name: Include version-specific variables for Ubuntu.
+  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Include version-specific variables for Linuxmint.
+  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  when: ansible_distribution == 'Linuxmint'
+
+- include: setup-apt.yml
+  when: ansible_pkg_mgr == 'apt'
+
+- block:
+    - name: install docker
+      package:
+        name: docker-engine
+        state: present
+    - name: create docker group
+      group:
+        name: "{{ docker_group }}"
+        state: present
+        system: yes
+    - name: add current user to docker group
+      user:
+        append: yes
+        groups: "{{ docker_group }}"
+        name: "{{ ansible_user_id }}"
+        state: present
+    - name: start docker daemon
+      service:
+        enabled: yes
+        name: docker
+        state: started
+  become: yes
+...

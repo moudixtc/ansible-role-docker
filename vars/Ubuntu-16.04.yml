@@ -1,0 +1,4 @@
+---
+# set Ubuntu 16.04 specific variables
+
+docker_apt_repo: 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
