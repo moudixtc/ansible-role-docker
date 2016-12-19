@@ -1,37 +1,51 @@
 ---
 # tasks file for ansible-role-docker
 
-- name: Include version-specific variables for Ubuntu.
-  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
-  when: ansible_distribution == 'Ubuntu'
+# Include variables for the specific version of distribution system
+- include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
 
-- name: Include version-specific variables for Linuxmint.
-  include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
-  when: ansible_distribution == 'Linuxmint'
-
-# perform OS specific tasks
+# Perform OS specific tasks
 - include: "setup-{{ ansible_distribution }}.yml"
 
 - block:
-    - name: install docker
+    - name: Install docker
       package:
         name: docker-engine
         state: present
-    - name: create docker group
+
+    - name: Get the current docker-compose version
+      shell: docker-compose -v | cut -d ' ' -f3 | sed 's/,*$//g'
+      register: docker_compose_current_version
+
+    - name: Update docker-compose when installed version differs from the desired
+      set_fact:
+        docker_compose_install_force: True
+      when: docker_compose_current_version != "{{ docker_compose_version }}"
+
+    - name: Install docker-compose
+      get_url:
+        dest: /usr/local/bin/docker-compose
+        force: "{{ docker_compose_install_force }}"
+        mode: 0755
+        url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+      when: docker_compose_install
+
+    - name: Create docker group
       group:
         name: "{{ docker_group }}"
         state: present
         system: yes
-    - name: add current user to docker group
+    - name: Add current user to docker group
       user:
         append: yes
         groups: "{{ docker_group }}"
         name: "{{ ansible_user_id }}"
         state: present
-    - name: start docker daemon
+    - name: Start docker daemon
       service:
         enabled: yes
         name: docker
         state: started
   become: yes
+  become_user: root
 ...
