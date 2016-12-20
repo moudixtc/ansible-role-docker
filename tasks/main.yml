@@ -14,13 +14,15 @@
         state: present
 
     - name: Get the current docker-compose version
-      shell: docker-compose -v | cut -d ' ' -f3 | sed 's/,*$//g'
+      shell: /usr/local/bin/docker-compose -v | cut -d ' ' -f3 | sed 's/,*$//g'
+      args:
+        executable: /bin/bash
       register: docker_compose_current_version
 
     - name: Update docker-compose when installed version differs from the desired
       set_fact:
-        docker_compose_install_force: True
-      when: docker_compose_current_version != "{{ docker_compose_version }}"
+        docker_compose_install_force: yes
+      when: docker_compose_current_version.stdout != "{{ docker_compose_version }}"
 
     - name: Install docker-compose
       get_url:
