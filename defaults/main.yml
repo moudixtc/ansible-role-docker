@@ -4,6 +4,6 @@
 apt_cache_valid_time: 43200
 docker_compose_install: False
 docker_compose_install_force: no
-docker_compose_version: 1.9.0
+docker_compose_version: 1.11.1
 docker_group: docker
 ...
