@@ -2,7 +2,10 @@
 # tasks file for ansible-role-docker
 
 # Include variables for the specific version of distribution system
+- include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+  when: ansible_distribution == "Linuxmint"
 - include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+  when: ansible_distribution == "Ubuntu"
 
 # Perform OS specific tasks
 - include: "setup-{{ ansible_distribution }}.yml"

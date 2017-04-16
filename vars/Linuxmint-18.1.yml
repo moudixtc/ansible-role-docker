@@ -1,4 +1,0 @@
----
-# set Linuxmint 18 specific variables
-
-docker_apt_repo: 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
