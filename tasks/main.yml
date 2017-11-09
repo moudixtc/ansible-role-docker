@@ -3,9 +3,11 @@
 
 - name: Include package manager specific variables
   include_vars: "{{ ansible_pkg_mgr }}.yml"
+  ignore_errors: yes
 
 - name: Include distribution specific variables
   include_vars: "{{ ansible_distribution }}.yml"
+  ignore_errors: yes
 
 - block:
     - name: Remove older versions of Docker
