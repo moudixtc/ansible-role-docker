@@ -1,9 +1,10 @@
 ---
 # defaults file for ansible-role-docker
-
-apt_cache_valid_time: 43200
+docker_compose_download_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
 docker_compose_install: False
 docker_compose_install_force: no
-docker_compose_version: 1.11.1
+docker_compose_version: latest
 docker_group: docker
+docker_package_name: docker-ce
+docker_version: latest
 ...

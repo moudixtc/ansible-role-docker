@@ -1,56 +1,61 @@
 ---
 # tasks file for ansible-role-docker
 
-# Include variables for the specific version of distribution system
-- include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
-  when: ansible_distribution == "Linuxmint"
-- include_vars: "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
-  when: ansible_distribution == "Ubuntu"
+- name: Include package manager specific variables
+  include_vars: "{{ ansible_pkg_mgr }}.yml"
 
-# Perform OS specific tasks
-- include: "setup-{{ ansible_distribution }}.yml"
+- name: Include distribution specific variables
+  include_vars: "{{ ansible_distribution }}.yml"
 
 - block:
-    - name: Install docker
+    - name: Remove older versions of Docker
       package:
-        name: docker-engine
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ docker_older_versions | default([]) }}"
+
+    - name: Install Docker dependencies
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ docker_dependencies | default([]) }}"
+
+    - name: Include package manager specific tasks
+      include_tasks: "{{ ansible_pkg_mgr }}.yml"
+
+    - name: Determine Docker version
+      set_fact:
+        docker_package_name: "docker-ce={{ docker_version }}"
+      when: docker_version != 'latest'
+
+    - name: Install Docker
+      package:
+        name: "{{ docker_package_name }}"
         state: present
 
-    - name: Get the current docker-compose version
-      shell: /usr/local/bin/docker-compose -v | cut -d ' ' -f3 | sed 's/,*$//g'
-      args:
-        executable: /bin/bash
-      register: docker_compose_current_version
-
-    - name: Update docker-compose when installed version differs from the desired
-      set_fact:
-        docker_compose_install_force: yes
-      when: docker_compose_current_version.stdout != "{{ docker_compose_version }}"
-
-    - name: Install docker-compose
-      get_url:
-        dest: /usr/local/bin/docker-compose
-        force: "{{ docker_compose_install_force }}"
-        mode: 0755
-        url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
-      when: docker_compose_install
-
-    - name: Create docker group
+    - name: Create Docker group
       group:
         name: "{{ docker_group }}"
         state: present
         system: yes
-    - name: Add current user to docker group
+
+    - name: Add current user to Docker group
       user:
         append: yes
         groups: "{{ docker_group }}"
-        name: "{{ ansible_user_id }}"
+        name: "{{ item }}"
         state: present
-    - name: Start docker daemon
+      with_items: "{{ docker_group_users | default([]) }}"
+
+    - name: Start Docker daemon
       service:
         enabled: yes
         name: docker
         state: started
   become: yes
   become_user: root
+
+- name: Install docker-compose
+  include_tasks: docker-compose.yml
+  when: docker_compose_install
 ...

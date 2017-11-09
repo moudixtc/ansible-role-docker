@@ -1,0 +1,11 @@
+---
+apt_cache_valid_time: 43200
+docker_dependencies:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - software-properties-common
+docker_older_versions:
+  - docker
+  - docker-engine
+  - docker.io

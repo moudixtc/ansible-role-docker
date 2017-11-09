@@ -1,0 +1,4 @@
+---
+docker_apt_key_url: 'https://download.docker.com/linux/ubuntu/gpg'
+# TODO the docker_apt_repo for Linuxmint is probably incorrect
+docker_apt_repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable'

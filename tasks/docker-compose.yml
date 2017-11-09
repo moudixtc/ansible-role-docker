@@ -1,0 +1,48 @@
+---
+- name: Get the latest docker-compose version
+  uri:
+    headers:
+      Accept: 'application/vnd.github.v3+json'
+    method: GET
+    url: 'https://api.github.com/repos/docker/compose/releases/latest'
+  register: docker_latest_release_response
+  when: docker_compose_version == 'latest'
+
+- name: Display the latest docker-compose version
+  debug: var=docker_latest_release_response.json.name
+
+- name: Set docker-compose version
+  set_fact:
+    docker_compose_version: "{{ docker_latest_release_response.json.name }}"
+  when: docker_compose_version == 'latest'
+
+- name: Set docker-compose download url
+  set_fact:
+    docker_compose_download_url: "https://github.com/docker/compose/releases/download/{{ docker_latest_release_response.json.name
+    }}/docker-compose-Linux-x86_64"
+  when: docker_compose_version == 'latest'
+
+- name: Get the installed docker-compose version
+  shell: /usr/local/bin/docker-compose -v | cut -d ' ' -f3 | sed 's/,*$//g'
+  args:
+    executable: /bin/bash
+  register: docker_compose_installed_version
+
+- name: Set docker_compose_install_force when installed version differs from the desired
+  set_fact:
+    docker_compose_install_force: yes
+  when: docker_compose_installed_version.stdout != docker_compose_version
+
+- name: Display installed docker-compose version
+  debug: var=docker_compose_installed_version.stdout
+
+- name: Download and install docker-compose
+  get_url:
+    dest: /usr/local/bin/docker-compose
+    force: "{{ docker_compose_install_force }}"
+    mode: 0755
+    url: "{{ docker_compose_download_url }}"
+  when: docker_compose_installed_version.stdout != docker_compose_version
+  become: yes
+  become_user: root
+...
