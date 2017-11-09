@@ -13,4 +13,9 @@
         update_cache: yes
   become: yes
   become_user: root
+
+- name: Set Docker's fully qualified package name
+  set_fact:
+    docker_package_name: "docker-ce={{ docker_version }}"
+  when: docker_version != 'latest'
 ...

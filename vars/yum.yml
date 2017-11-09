@@ -1,0 +1,10 @@
+---
+docker_dependencies:
+  - device-mapper-persistent-data
+  - lvm2
+  - yum-utils
+docker_older_versions:
+  - docker
+  - docker-common
+  - docker-engine
+#  - docker-selinux

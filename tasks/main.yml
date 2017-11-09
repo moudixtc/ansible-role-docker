@@ -20,18 +20,18 @@
         state: present
       with_items: "{{ docker_dependencies | default([]) }}"
 
+    - name: Set Docker package state
+      set_fact:
+        docker_package_state: latest
+      when: docker_version == 'latest'
+
     - name: Include package manager specific tasks
       include_tasks: "{{ ansible_pkg_mgr }}.yml"
-
-    - name: Determine Docker version
-      set_fact:
-        docker_package_name: "docker-ce={{ docker_version }}"
-      when: docker_version != 'latest'
 
     - name: Install Docker
       package:
         name: "{{ docker_package_name }}"
-        state: present
+        state: "{{ docker_package_state }}"
 
     - name: Create Docker group
       group:
@@ -39,7 +39,7 @@
         state: present
         system: yes
 
-    - name: Add current user to Docker group
+    - name: Add users to Docker group
       user:
         append: yes
         groups: "{{ docker_group }}"
@@ -55,7 +55,7 @@
   become: yes
   become_user: root
 
-- name: Install docker-compose
+- name: Run docker-compose tasks
   include_tasks: docker-compose.yml
   when: docker_compose_install
 ...
