@@ -13,8 +13,7 @@
 
     - name: Set docker-compose download url
       set_fact:
-        docker_compose_download_url: "https://github.com/docker/compose/releases/download/{{ docker_latest_release_response.json.name
-        }}/docker-compose-Linux-x86_64"
+        docker_compose_download_url: "https://github.com/docker/compose/releases/download/{{ docker_latest_release_response.json.name }}/docker-compose-Linux-x86_64"
 
     - name: Set docker-compose version
       set_fact:
