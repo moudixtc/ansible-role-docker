@@ -1,11 +1,25 @@
 ---
 # defaults file for ansible-role-docker
+
+# Download url for docker-compose
 docker_compose_download_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+
+# Whether to install docker-compose
 docker_compose_install: no
-docker_compose_install_force: no
+
+# The docker-compose version to install. Will override the installed version if different from the one defined
 docker_compose_version: latest
+
+# The name of the docker group
 docker_group: docker
+
+# The users to be added to the docker group
+docker_group_members: []
+
+# The name of the docker package
 docker_package_name: docker-ce
-docker_package_state: present
+
+# The docker version to install. When not set as 'latest', it must the specific version in the package manager's repo.
+# e.g. '17.06.2' should be set as '17.06.2~ce-0~ubuntu' in ubuntu
 docker_version: latest
 ...

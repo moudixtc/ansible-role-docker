@@ -1,10 +1,12 @@
 ---
+# Docker's dependencies to be installed
 docker_dependencies:
   - device-mapper-persistent-data
   - lvm2
   - yum-utils
+
+# Docker's previous names, and will be removed
 docker_older_versions:
   - docker
   - docker-common
   - docker-engine
-#  - docker-selinux

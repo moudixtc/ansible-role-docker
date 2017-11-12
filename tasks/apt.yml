@@ -1,18 +1,15 @@
 ---
-- block:
-    - name: Add Docker's official GPG key
-      apt_key:
-        state: present
-        url: "{{ docker_apt_key_url }}"
+- name: Add Docker's official GPG key
+  apt_key:
+    state: present
+    url: "{{ docker_apt_key_url }}"
 
-    - name: Set up Docker's stable repo
-      apt_repository:
-        filename: docker
-        repo: "{{ docker_apt_repo }}"
-        state: present
-        update_cache: yes
-  become: yes
-  become_user: root
+- name: Set up Docker's stable repo
+  apt_repository:
+    filename: docker
+    repo: "{{ docker_apt_repo }}"
+    state: present
+    update_cache: yes
 
 - name: Set Docker's fully qualified package name
   set_fact:

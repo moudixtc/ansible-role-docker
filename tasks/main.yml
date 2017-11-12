@@ -9,53 +9,45 @@
   include_vars: "{{ ansible_distribution }}.yml"
   ignore_errors: yes
 
-- block:
-    - name: Remove older versions of Docker
-      package:
-        name: "{{ item }}"
-        state: absent
-      with_items: "{{ docker_older_versions | default([]) }}"
+- name: Remove older versions of Docker
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ docker_older_versions | default([]) }}"
 
-    - name: Install Docker dependencies
-      package:
-        name: "{{ item }}"
-        state: present
-      with_items: "{{ docker_dependencies | default([]) }}"
+- name: Install Docker dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ docker_dependencies | default([]) }}"
 
-    - name: Set Docker package state
-      set_fact:
-        docker_package_state: latest
-      when: docker_version == 'latest'
+- name: Include package manager specific tasks
+  include_tasks: "{{ ansible_pkg_mgr }}.yml"
 
-    - name: Include package manager specific tasks
-      include_tasks: "{{ ansible_pkg_mgr }}.yml"
+- name: Install Docker
+  package:
+    name: "{{ docker_package_name }}"
+    state: "{{ 'latest' if docker_version == 'latest' else 'present' }}"
 
-    - name: Install Docker
-      package:
-        name: "{{ docker_package_name }}"
-        state: "{{ docker_package_state }}"
+- name: Create Docker group
+  group:
+    name: "{{ docker_group }}"
+    state: present
+    system: yes
 
-    - name: Create Docker group
-      group:
-        name: "{{ docker_group }}"
-        state: present
-        system: yes
+- name: Add users to Docker group
+  user:
+    append: yes
+    groups: "{{ docker_group }}"
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ docker_group_members | default([]) }}"
 
-    - name: Add users to Docker group
-      user:
-        append: yes
-        groups: "{{ docker_group }}"
-        name: "{{ item }}"
-        state: present
-      with_items: "{{ docker_group_users | default([]) }}"
-
-    - name: Start Docker daemon
-      service:
-        enabled: yes
-        name: docker
-        state: started
-  become: yes
-  become_user: root
+- name: Start Docker daemon
+  service:
+    enabled: yes
+    name: docker
+    state: started
 
 - name: Run docker-compose tasks
   include_tasks: docker-compose.yml

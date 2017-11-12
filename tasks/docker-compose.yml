@@ -23,25 +23,16 @@
 
 - name: Get the installed docker-compose version
   shell: /usr/local/bin/docker-compose -v | cut -d ' ' -f3 | sed 's/,*$//g'
-  args:
-    executable: /bin/bash
   register: docker_compose_installed_version
 
 - name: Display installed docker-compose version
   debug: var=docker_compose_installed_version.stdout
 
-- name: Set docker_compose_install_force when installed version differs from the desired
-  set_fact:
-    docker_compose_install_force: yes
-  when: docker_compose_installed_version.stdout != docker_compose_version
-
 - name: Download and install docker-compose
   get_url:
     dest: /usr/local/bin/docker-compose
-    force: "{{ docker_compose_install_force }}"
+    force: yes
     mode: 0755
     url: "{{ docker_compose_download_url }}"
   when: docker_compose_installed_version.stdout != docker_compose_version
-  become: yes
-  become_user: root
 ...

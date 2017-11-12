@@ -1,2 +1,5 @@
 # intellij stuff
 .idea
+
+# Ansible stuff
+**.retry
