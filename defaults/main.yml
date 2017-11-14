@@ -1,6 +1,9 @@
 ---
 # defaults file for ansible-role-docker
 
+# The user to become for tasks that require escalated privilege
+become_user: root
+
 # Download url for docker-compose
 docker_compose_download_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
 

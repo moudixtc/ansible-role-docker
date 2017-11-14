@@ -34,4 +34,6 @@
     mode: 0755
     url: "{{ docker_compose_download_url }}"
   when: docker_compose_installed_version.stdout != docker_compose_version
+  become: yes
+  become_user: "{{ become_user }}"
 ...

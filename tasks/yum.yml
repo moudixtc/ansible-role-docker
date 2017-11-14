@@ -3,6 +3,8 @@
   shell: "yum-config-manager --add-repo {{ docker_yum_repo }}"
   args:
     creates: /etc/yum.repos.d/docker-ce.repo
+  become: yes
+  become_user: "{{ become_user }}"
 
 - name: Set Docker's fully qualified package name
   set_fact:
