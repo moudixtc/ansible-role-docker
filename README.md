@@ -29,7 +29,7 @@ Basic install with docker and docker-compose. Also add ubuntu user to docker's g
         name: moudixtc.docker
       vars:
         docker_compose_install: yes
-        docker_group_users:
+        docker_group_members:
           - ubuntu
 ```
 
