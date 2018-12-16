@@ -27,12 +27,19 @@
 - name: Display installed docker-compose version
   debug: var=docker_compose_installed_version.stdout
 
-- name: Download and install docker-compose
-  get_url:
-    dest: /usr/local/bin/docker-compose
-    force: yes
-    mode: 0755
-    url: "{{ docker_compose_download_url }}"
+- block:
+    - name: Download and install docker-compose
+      get_url:
+        dest: /usr/local/bin/docker-compose
+        force: yes
+        mode: 0755
+        url: "{{ docker_compose_download_url }}"
+
+    - name: Install command completion
+      get_url:
+        dest: /etc/bash_completion.d/docker-compose
+        force: no
+        url: "https://raw.githubusercontent.com/docker/compose/{{ docker_compose_version }}/contrib/completion/bash/docker-compose"
   when: docker_compose_installed_version.stdout != docker_compose_version
   become: yes
   become_user: "{{ become_user }}"

@@ -57,6 +57,6 @@
   become_user: "{{ become_user }}"
 
 - name: Run docker-compose tasks
-  include_tasks: docker-compose.yml
+  include_tasks: docker_compose.yml
   when: docker_compose_install
 ...
