@@ -25,4 +25,16 @@ docker_package_name: docker-ce
 # The docker version to install. When not set as 'latest', it must the specific version in the package manager's repo.
 # e.g. '17.06.2' should be set as '17.06.2~ce-0~ubuntu' in ubuntu
 docker_version: latest
+
+# A map of linux distribution variants to its base distribution's info
+lsb_map:
+  LinuxMint:
+    id: ubuntu
+  LinuxMint_tara:
+    codename: bionic
+  LinuxMint_tessa:
+    codename: bionic
+
+mapped_lsb_id: "{{ lsb_map[ansible_lsb.id].id | default(ansible_lsb.id) }}"
+mapped_lsb_codename: "{{ lsb_map[ansible_lsb.id + '_' + ansible_lsb.codename].codename | default(ansible_lsb.codename) }}"
 ...

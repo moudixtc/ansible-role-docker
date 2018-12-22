@@ -6,25 +6,23 @@
   ignore_errors: yes
 
 - name: Include distribution specific vars
-  include_vars: "{{ ansible_distribution | lower }}.yml"
+  include_vars: "{{ ansible_lsb.id }}.yml"
   ignore_errors: yes
 
 - name: Include distribution version specific vars
-  include_vars: "{{ ansible_distribution | lower }}-{{ ansible_distribution_version }}.yml"
+  include_vars: "{{ ansible_lsb.id }}-{{ ansible_lsb.release }}.yml"
   ignore_errors: yes
 
 - block:
     - name: Remove older versions of Docker
       package:
-        name: "{{ item }}"
+        name: "{{ docker_older_versions | default([]) }}"
         state: absent
-      with_items: "{{ docker_older_versions | default([]) }}"
 
     - name: Install Docker dependencies
       package:
-        name: "{{ item }}"
+        name: "{{ docker_dependencies | default([]) }}"
         state: present
-      with_items: "{{ docker_dependencies | default([]) }}"
 
     - name: Include package manager specific tasks
       include_tasks: "{{ ansible_pkg_mgr }}.yml"
