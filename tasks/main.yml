@@ -1,17 +1,16 @@
 ---
 # tasks file for ansible-role-docker
 
-- name: Include package manager specific vars
-  include_vars: "{{ ansible_pkg_mgr }}.yml"
-  ignore_errors: yes
-
-- name: Include distribution specific vars
-  include_vars: "{{ ansible_lsb.id }}.yml"
-  ignore_errors: yes
-
-- name: Include distribution version specific vars
-  include_vars: "{{ ansible_lsb.id }}-{{ ansible_lsb.release }}.yml"
-  ignore_errors: yes
+- name: Include linux distribution specific variables
+  include_vars:
+    dir: vars
+    files_matching: "{{ item }}.yml"
+    ignore_unknown_extensions: yes
+  loop:
+    - "{{ ansible_pkg_mgr }}"
+    - "{{ ansible_lsb.id }}"
+    - "{{ ansible_lsb.id }}-{{ ansible_lsb.major_release }}"
+    - "{{ ansible_lsb.id }}-{{ ansible_lsb.release }}"
 
 - block:
     - name: Remove older versions of Docker
