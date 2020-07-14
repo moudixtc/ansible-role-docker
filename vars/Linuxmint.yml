@@ -1,0 +1,3 @@
+---
+mapped_lsb_id: "{{ lookup('ini', 'DISTRIB_ID type=properties file=/etc/upstream-release/lsb-release') | default(ansible_lsb.id) }}"
+mapped_lsb_codename: "{{ lookup('ini', 'DISTRIB_CODENAME type=properties file=/etc/upstream-release/lsb-release') | default(ansible_lsb.codename) }}"
